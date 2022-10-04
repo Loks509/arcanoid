@@ -15,7 +15,7 @@ red = (255, 0, 0)
 
 clock = pygame.time.Clock()
 
-b1 = Ball(20,20,100,100,dis)
+b1 = Ball(20,20,100,100,dis, black)
 
 game_over=False
 while not game_over:
@@ -31,7 +31,6 @@ while not game_over:
     dis.fill(white)
    
     b1.draw()
-    pygame.draw.rect(dis, black, [20, 20, 10, 10])
     pygame.display.update()
     clock.tick(FPS)
 
