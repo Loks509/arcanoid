@@ -1,9 +1,18 @@
 import pygame
 
 from Ball import Ball
+
+from Player import Player
+
 pygame.init()
  
 FPS = 30
+
+def check_collision(obj1, obj2):
+    """подразумеваем только прямоугольные границы коллизий"""
+    b1 = obj1.get_bounds()
+    b2 = obj2.get_bounds()
+
 
 dis=pygame.display.set_mode((500, 400))
 pygame.display.update()
@@ -15,7 +24,14 @@ red = (255, 0, 0)
 
 clock = pygame.time.Clock()
 
-b1 = Ball(20,20,100,100,dis, black)
+b1 = Ball(20,20,10,10,dis, black)
+
+p1 = Player(dis)
+
+
+objects = []
+objects.append(b1)
+objects.append(p1)
 
 game_over=False
 while not game_over:
@@ -24,13 +40,21 @@ while not game_over:
             game_over=True
 
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RIGHT:
-                print('fdfd')
+            if event.key == pygame.K_RIGHT: #перенести в игрока
+                p1.move_r = True
             if event.key == pygame.K_LEFT:
-                print('fdfd')
+                p1.move_l = True
+
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_RIGHT:
+                p1.move_r = False
+            if event.key == pygame.K_LEFT:
+                p1.move_l = False
     dis.fill(white)
    
-    b1.draw()
+    for obj in objects:
+        obj.draw()
+    check_collision(p1, b1)
     pygame.display.update()
     clock.tick(FPS)
 
