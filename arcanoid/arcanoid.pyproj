@@ -26,6 +26,9 @@
     <Compile Include="Ball.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Brick.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Game.py">
       <SubType>Code</SubType>
     </Compile>
