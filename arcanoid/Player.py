@@ -19,7 +19,7 @@ class Player(AbcObjectClass):
 
         if (self.move_r and not self.move_l):       dx = 1
         elif (not self.move_r and self.move_l):     dx = -1
-        else:                                       dx = 0
+        else:                                       dx = 0      #на свсякий случай
         #dx = 1 if (self.move_r and not self.move_l) else -1 if (not self.move_r and self.move_l) else 0  # if в одну строку
 
         self.x = self.x + dx * self.speed
