@@ -1,20 +1,17 @@
-from cmath import sqrt
 import pygame
 from ObjectClass import AbcObjectClass
 
 class Ball(AbcObjectClass):
     """Класс игрового шара"""
-    def __init__(self, x, y, width, height, display, color:tuple):
+    def __init__(self, x, y, width, height, display, color:tuple, dx = 1, dy = -1):
         super().__init__((x, y), (width, height))
         self.display = display
         self.color = color
 
         self.dx = 1
         self.dy = 1
-        norma = (self.dx * self.dx + self.dy * self.dy)**(0.5)
-        #print (norma)
-        #self.dx = self.dx / norma
-        #self.dy = self.dy / norma
+        self.is_static = False
+        self.is_comm_dyn = True
 
         self.speed_x = 5
         self.speed_y = 10
@@ -41,10 +38,11 @@ class Ball(AbcObjectClass):
     def get_bounds(self):
         return ((self.x, self.y),(self.x + self.width, self.y + self.height))
 
-    def set_v_by_n(self, n: tuple):
-        """Устанавливает вектор скорости сонаправленным с нормальню"""
-        scalar_m = n[0] * self.dx + n[1] * self.dy
-        if scalar_m < 0:      #угол больше 90 градусов
-            #proekz_perpend = (n[0] * scalar_m, n[1] * scalar_m)
-            self.dx = self.dx - 2 * scalar_m * n[0]
-            self.dy = self.dy - 2 * scalar_m * n[1]
+
+    # def set_v_by_n(self, n: tuple):
+    #     """Устанавливает вектор скорости сонаправленным с нормальню"""
+    #     scalar_m = n[0] * self.dx + n[1] * self.dy
+    #     if scalar_m < 0:      #угол больше 90 градусов
+    #         #proekz_perpend = (n[0] * scalar_m, n[1] * scalar_m)
+    #         self.dx = self.dx - 2 * scalar_m * n[0]
+    #         self.dy = self.dy - 2 * scalar_m * n[1]

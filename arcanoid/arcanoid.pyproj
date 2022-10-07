@@ -38,6 +38,9 @@
     <Compile Include="Player.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="settings.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">

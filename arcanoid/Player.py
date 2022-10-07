@@ -2,16 +2,17 @@ import pygame
 from ObjectClass import AbcObjectClass
 
 class Player(AbcObjectClass):
-    def __init__(self, display):
-        self.x = 0
-        self.speed = 5
-        self.width = 100
-        self.height = 20
+    def __init__(self, spawn_x, speed, display, width = 100, height = 20, color:tuple = (100,100,100)):
+        super().__init__((spawn_x, display.get_height() - height), (width, height))
+        self.__base_speed = self.speed = speed
+        self.__baffs = []
         self.display = display
-        self.color = (100,100,100)
+        self.color = color
         self.move_r = False
         self.move_l = False
-        self.y = self.display.get_height() - self.height
+
+    def handle_key_event(self):
+        pass
 
     def update(self):
         if self.move_r == self.move_l:
@@ -19,7 +20,7 @@ class Player(AbcObjectClass):
 
         if (self.move_r and not self.move_l):       dx = 1
         elif (not self.move_r and self.move_l):     dx = -1
-        else:                                       dx = 0      #на свсякий случай
+        else:                                       dx = 0
         #dx = 1 if (self.move_r and not self.move_l) else -1 if (not self.move_r and self.move_l) else 0  # if в одну строку
 
         self.x = self.x + dx * self.speed
