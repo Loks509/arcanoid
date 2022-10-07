@@ -8,20 +8,21 @@ class Ball(AbcObjectClass):
         self.display = display
         self.color = color
         self.dx = 1
-        self.dy = 2
-        self.speed = 5
+        self.dy = 1
+        self.speed_x = 5
+        self.speed_y = 10
 
     def update(self):
-        new_x = self.x + self.speed * self.dx
-        new_y = self.y + self.speed * self.dy
+        new_x = self.x + self.speed_x * self.dx
+        new_y = self.y + self.speed_y * self.dy
 
-        if new_x + self.width > self.display.get_width() or new_x < 0:
-            self.dx = -self.dx
-            new_x = self.x + self.speed * self.dx
+        if new_x + self.width > self.display.get_width() or new_x < 0:  #обработка столкновения со стенами
+            self.dx = 1 if new_x < 0 else -1
+            new_x = self.x + self.speed_x * self.dx
 
         if new_y + self.height > self.display.get_height() or new_y < 0:
-            self.dy = -self.dy
-            new_y = self.y + self.speed * self.dy
+            self.dy = 1 if new_y < 0 else -1
+            new_y = self.y + self.speed_y * self.dy
 
         self.x = new_x
         self.y = new_y
@@ -32,6 +33,10 @@ class Ball(AbcObjectClass):
 
     def get_bounds(self):
         return ((self.x, self.y),(self.x + self.width, self.y + self.height))
+
+    def set_v_by_n(self, n):
+        """Устанавливает вектор скорости сонаправленным с нормальню"""
+
 
 
 

@@ -40,8 +40,6 @@ def get_normal(ball, obj, width, height):
     ball.y = old_y
     b = ball.get_bounds()
     ob = obj.get_bounds()
-    print(old_x, old_y, b, ob)
-    print(ball.dx, ball.dy)
     if ob[0][1] == old_y + ball.height: return (0, -1)
     if ob[1][1] == old_y: return (0, 1)
     if ob[0][0] == old_x + ball.width: return (-1, 0)
@@ -50,7 +48,7 @@ def get_normal(ball, obj, width, height):
     return (0, 0)
 
 
-dis=pygame.display.set_mode((500, 400))
+dis=pygame.display.set_mode((800, 1000))
 pygame.display.update()
 pygame.display.set_caption('Арканоид')
  
@@ -61,13 +59,16 @@ red = (255, 0, 0)
 clock = pygame.time.Clock()
 
 b1 = Ball(20,20,10,10,dis, black)
+b2 = Ball(50,20,10,10,dis, black)
 
 p1 = Player(dis)
 
 
 objects = []
-objects.append(b1)
 objects.append(p1)
+objects.append(b1)
+objects.append(b2)
+
 objects.append(Brick(200, 300, 100, 30, dis, black))
 
 game_over=False
@@ -91,21 +92,17 @@ while not game_over:
    
     for obj in objects:
         obj.draw()
-    #print("__________________")
-    #print(b1.x, b1.y)
-    for obj in objects:
-        if isinstance(obj, Player) or isinstance(obj, Brick):
-            collis = check_collision(obj, b1)
-            if collis[0]:     #временное решение
-        
-                normal_2 = get_normal(b1, obj, collis[1], collis[2])
-                print(normal_2)
-                b1.dy = b1.dy if normal_2[1] == 0 else -b1.dy 
-                b1.dx = b1.dx if normal_2[0] == 0 else -b1.dx 
-                objects.remove(obj)
-                #b1.update()
-                #exit()
-                #b1.dy = -b1.dy
+    for ball in objects:
+        if isinstance(ball, Ball):
+            for obj in objects:
+                if isinstance(obj, Player) or isinstance(obj, Brick):
+                    collis = check_collision(obj, ball)
+                    if collis[0]:     #временное решение
+                        normal_2 = get_normal(ball, obj, collis[1], collis[2])
+                        #print(normal_2)
+                        ball.dy = ball.dy if normal_2[1] == 0 else normal_2[1] 
+                        ball.dx = ball.dx if normal_2[0] == 0 else normal_2[0] 
+                        #objects.remove(obj)
     pygame.display.update()
     clock.tick(FPS)
 

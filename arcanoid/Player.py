@@ -6,7 +6,7 @@ class Player(AbcObjectClass):
         self.x = 0
         self.speed = 5
         self.width = 100
-        self.height = 100
+        self.height = 20
         self.display = display
         self.color = (100,100,100)
         self.move_r = False
