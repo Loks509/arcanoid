@@ -40,10 +40,10 @@ def get_normal(ball, obj, width, height):
     ball.y = old_y
     b = ball.get_bounds()
     ob = obj.get_bounds()
-    if ob[0][1] == old_y + ball.height: return (0, -1)
-    if ob[1][1] == old_y: return (0, 1)
-    if ob[0][0] == old_x + ball.width: return (-1, 0)
-    if ob[1][0] == old_x: return (1, 0)
+    if ob[0][1] == ball.y + ball.height: return (0, -1)
+    if ob[1][1] == ball.y: return (0, 1)
+    if ob[0][0] == ball.x + ball.width: return (-1, 0)
+    if ob[1][0] == ball.x: return (1, 0)
 
     return (0, 0)
 
@@ -92,6 +92,7 @@ while not game_over:
    
     for obj in objects:
         obj.draw()
+
     for ball in objects:
         if isinstance(ball, Ball):
             for obj in objects:
@@ -99,6 +100,7 @@ while not game_over:
                     collis = check_collision(obj, ball)
                     if collis[0]:     #временное решение
                         normal_2 = get_normal(ball, obj, collis[1], collis[2])
+                        #ball.set_v_by_n(normal_2)
                         #print(normal_2)
                         ball.dy = ball.dy if normal_2[1] == 0 else normal_2[1] 
                         ball.dx = ball.dx if normal_2[0] == 0 else normal_2[0] 
