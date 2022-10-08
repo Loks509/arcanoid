@@ -20,6 +20,9 @@ class Ball(AbcObjectClass):
         new_x = self.x + self.speed_x * self.dx
         new_y = self.y + self.speed_y * self.dy
 
+        if new_y + self.height > self.display.get_height():
+            self.is_deleted = True
+            
         if new_x + self.width > self.display.get_width() or new_x < 0:  #обработка столкновения со стенами
             self.dx = 1 if new_x < 0 else -1
             new_x = self.x + self.speed_x * self.dx
@@ -27,6 +30,8 @@ class Ball(AbcObjectClass):
         if new_y + self.height > self.display.get_height() or new_y < 0:
             self.dy = 1 if new_y < 0 else -1
             new_y = self.y + self.speed_y * self.dy
+
+        
 
         self.x = new_x
         self.y = new_y

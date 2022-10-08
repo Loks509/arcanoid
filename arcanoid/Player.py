@@ -1,18 +1,33 @@
 import pygame
 from ObjectClass import AbcObjectClass
 
+
+
+
 class Player(AbcObjectClass):
-    def __init__(self, spawn_x, speed, display, width = 100, height = 20, color:tuple = (100,100,100)):
-        super().__init__((spawn_x, display.get_height() - height), (width, height))
+    def __init__(self, spawn_x, spawn_y, speed, display, width = 100, height = 20, color:tuple = (100,100,100)):
+        y = spawn_y if spawn_y != -1 else display.get_height() - height
+        super().__init__((spawn_x, y), (width, height))
         self.__base_speed = self.speed = speed
-        self.__baffs = []
+        #self.__baffs = []
         self.display = display
         self.color = color
         self.move_r = False
         self.move_l = False
 
-    def handle_key_event(self):
-        pass
+    def move_right(self, e_type):
+        if e_type == pygame.KEYDOWN: self.move_r = True
+        if e_type == pygame.KEYUP: self.move_r = False
+
+    def move_left(self, e_type):
+        if e_type == pygame.KEYDOWN: self.move_l = True
+        if e_type == pygame.KEYUP: self.move_l = False
+
+    def handle_key_event(self, e_key_in, action):
+        def handler(e_type, e_key):
+            if e_key_in == e_key:
+                action(e_type)
+        return handler
 
     def update(self):
         if self.move_r == self.move_l:

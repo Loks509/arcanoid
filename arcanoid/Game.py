@@ -9,6 +9,7 @@ from Player import Player
 
 from Brick import Brick
 
+
 class Game():
     """Класс игры"""
     def __init__(self):
@@ -18,6 +19,7 @@ class Game():
 
         self.clock = pygame.time.Clock()
         self.objects = []
+        self.list_event_handler = []
         self.player = 0
         self.end_game = False
 
@@ -37,7 +39,7 @@ class Game():
         width = abs(bound_intesect['1_side'] - bound_intesect['2_side'])
         height = abs(bound_intesect['3_side'] - bound_intesect['4_side'])
         #print(bound_intesect)
-        print(width, height)
+        # print(width, height)
         if(width * height == 0):
             width = height =0
 
@@ -64,24 +66,17 @@ class Game():
                 self.end_game=True
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RIGHT: #перенести в игрока
-                    self.player.move_r = True
-                if event.key == pygame.K_LEFT:
-                    self.player.move_l = True
-
                 if event.key == pygame.K_UP:
                     self.create_ball()
 
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_RIGHT:
-                    self.player.move_r = False
-                if event.key == pygame.K_LEFT:
-                    self.player.move_l = False
+            if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
+                for event_handler in self.list_event_handler:
+                    event_handler(event.type, event.key)
         
     def __processing_collision(self):
-        for dynamic_obj in self.objects:        #перебираем динамические объекты
+        for id_dyn, dynamic_obj in enumerate(self.objects):        #перебираем динамические объекты
             if not dynamic_obj.is_static:
-                for static_obj in self.objects:      #берем статический объект
+                for id_stat, static_obj in  enumerate(self.objects):      #берем статический объект
                     if isinstance(static_obj, AbcObjectClass) and not static_obj is dynamic_obj and static_obj.is_comm_dyn:         #если этот объект может взаимодействовать с другими динамическими объектами
                         collis = self.__check_collision(static_obj, dynamic_obj)
                         if collis[0]:
@@ -90,15 +85,20 @@ class Game():
                             dynamic_obj.dx = dynamic_obj.dx if normal_2[0] == 0 else normal_2[0]
 
                             if dynamic_obj.hit(static_obj):
-                                self.objects.remove(dynamic_obj)
+                                del self.objects[id_dyn]
+                                #self.objects.remove(dynamic_obj)
 
                             if static_obj.hit(dynamic_obj):
-                                self.objects.remove(static_obj)
+                                del self.objects[id_stat]
+
+                                #self.objects.remove(static_obj)
 
 
-    def create_player(self):
-        self.player = Player(0, 20, self.dis)
+    def create_player(self, key_right, key_left, speed = 20, x = 0, y = -1):
+        self.player = Player(x, y, speed, self.dis)
         self.objects.append(self.player)
+        self.list_event_handler.append(self.player.handle_key_event(key_right, self.player.move_right))
+        self.list_event_handler.append(self.player.handle_key_event(key_left, self.player.move_left))
 
     def create_ball(self, old_ball = False):
         if old_ball:
@@ -112,7 +112,8 @@ class Game():
         self.objects.append(brick)
 
     def create_objects(self):
-        self.create_player()
+        self.create_player(pygame.K_RIGHT, pygame.K_LEFT)
+        #self.create_player(pygame.K_d, pygame.K_a, 20, 0, 0)
         self.create_ball()
         # self.create_brick(100, 100, 50, 100)
         for i in range(10):
@@ -120,11 +121,18 @@ class Game():
                 self.create_brick(i*100, j*50, 80, 30, stgs.Colors.get_random_c())
 
 
+    def Trash(self):
+        for id, obj in enumerate(self.objects):
+            if obj.is_deleted:
+                del self.objects[id]
+                #self.objects.remove(obj)
 
     def start_game(self):
         self.create_objects()
         while not self.end_game:
+            # print(int(self.clock.get_fps()))
             self.dis.fill(stgs.Colors.c_white)
+            self.Trash()
             self.__check_event()
             for obj in self.objects:
                 obj.draw()
