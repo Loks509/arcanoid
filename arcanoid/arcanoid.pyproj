@@ -29,6 +29,7 @@
     <Compile Include="Brick.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ClassConnectTCP.py" />
     <Compile Include="Game.py">
       <SubType>Code</SubType>
     </Compile>

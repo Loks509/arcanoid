@@ -1,5 +1,9 @@
 import pygame
 import settings as stgs
+import time
+from threading import Thread
+
+import ClassConnectTCP as tcpcon
 
 from ObjectClass import AbcObjectClass
 
@@ -21,6 +25,7 @@ class Game():
         self.objects = []
         self.list_event_handler = []
         self.player = 0
+        self.opponent = 0
         self.end_game = False
 
     def __check_collision(self, obj1, obj2):
@@ -94,11 +99,14 @@ class Game():
                                 #self.objects.remove(static_obj)
 
 
-    def create_player(self, key_right, key_left, speed = 20, x = 0, y = -1):
-        self.player = Player(x, y, speed, self.dis)
-        self.objects.append(self.player)
-        self.list_event_handler.append(self.player.handle_key_event(key_right, self.player.move_right))
-        self.list_event_handler.append(self.player.handle_key_event(key_left, self.player.move_left))
+    def create_player(self, key_right = False, key_left = False, speed = 20, x = 0, y = -1):
+        player = Player(x, y, speed, self.dis)
+        self.objects.append(player)
+        if key_right:
+            self.list_event_handler.append(player.handle_key_event(key_right, player.move_right))
+        if key_left:
+            self.list_event_handler.append(player.handle_key_event(key_left, player.move_left))
+        return player
 
     def create_ball(self, old_ball = False):
         if old_ball:
@@ -112,8 +120,8 @@ class Game():
         self.objects.append(brick)
 
     def create_objects(self):
-        self.create_player(pygame.K_RIGHT, pygame.K_LEFT)
-        #self.create_player(pygame.K_d, pygame.K_a, 20, 0, 0)
+        self.player = self.create_player(pygame.K_RIGHT, pygame.K_LEFT)
+        self.opponent = self.create_player(False, False,20,0,0)
         self.create_ball()
         # self.create_brick(100, 100, 50, 100)
         for i in range(10):
@@ -127,18 +135,59 @@ class Game():
                 del self.objects[id]
                 #self.objects.remove(obj)
 
+    def recvGameData(self):
+        while True:
+            data = self.test.recvData()
+            if(data):
+                self.opponent.x = data[0]
+
+    def sendGameData(self):
+        while True:
+            self.test.sendData([self.player.x])
+            time.sleep(1/60)
+    
+    def sendGameStateFromServer(self):
+        while True:
+            data = [[obj.x, obj.y, obj.width, obj.height] for obj in self.objects]
+            self.test.sendData(data)
+            time.sleep(1/60)
+
+    def recvGameStateFromServer(self):
+            data = self.test.recvData()
+            if(data):
+                for obj in data:
+                    pygame.draw.rect(self.dis, stgs.Colors.c_black, [obj[0], obj[1], obj[2], obj[3]])
+
     def start_game(self):
         self.create_objects()
+        v_type = input('type')
+        if v_type == '1':
+            self.test = tcpcon.Server('192.168.1.104',8888)
+            p1 = Thread(target = self.sendGameStateFromServer, daemon = True)
+            p2 = Thread(target = self.recvGameData, daemon = True)
+            p2.start()
+            p1.start()
+        else:
+            self.test = tcpcon.Client('192.168.1.104',8888)
+            # p1 = Thread(target = self.recvGameStateFromServer, daemon = True)
+            # p2 = Thread(target = self.recvGameData, daemon = True)
+        
+        
         while not self.end_game:
             # print(int(self.clock.get_fps()))
+            
             self.dis.fill(stgs.Colors.c_white)
-            self.Trash()
             self.__check_event()
-            for obj in self.objects:
-                obj.draw()
+            if v_type == '1':
+                self.Trash()
+                
+                for obj in self.objects:
+                    obj.draw()
 
-            self.__processing_collision()
+                self.__processing_collision()
                             #objects.remove(obj)
+            else:
+                self.recvGameStateFromServer()
             pygame.display.update()
             self.clock.tick(stgs.FPS)
         pygame.quit()
