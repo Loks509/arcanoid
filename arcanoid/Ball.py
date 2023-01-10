@@ -3,7 +3,7 @@ from ObjectClass import AbcObjectClass
 
 class Ball(AbcObjectClass):
     """Класс игрового шара"""
-    def __init__(self, x, y, width, height, display, color:tuple, dx = 1, dy = -1):
+    def __init__(self, x, y, width, height, display, color:tuple, dx = 1, dy = -1, id = False):
         super().__init__((x, y), (width, height))
         self.display = display
         self.color = color

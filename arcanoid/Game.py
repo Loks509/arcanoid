@@ -99,8 +99,8 @@ class Game():
                                 #self.objects.remove(static_obj)
 
 
-    def create_player(self, key_right = False, key_left = False, speed = 20, x = 0, y = -1):
-        player = Player(x, y, speed, self.dis)
+    def create_player(self, key_right = False, key_left = False, speed = 20, x = 0, y = -1, is_playable = True):
+        player = Player(x, y, speed, self.dis, is_playable = is_playable)
         self.objects.append(player)
         if key_right:
             self.list_event_handler.append(player.handle_key_event(key_right, player.move_right))
@@ -121,7 +121,7 @@ class Game():
 
     def create_objects(self):
         self.player = self.create_player(pygame.K_RIGHT, pygame.K_LEFT)
-        self.opponent = self.create_player(False, False,20,0,0)
+        self.opponent = self.create_player(False, False,20,0,0, False)
         self.create_ball()
         # self.create_brick(100, 100, 50, 100)
         for i in range(10):

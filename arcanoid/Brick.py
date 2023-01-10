@@ -3,8 +3,8 @@ from ObjectClass import AbcObjectClass
 
 class Brick(AbcObjectClass):
     """Класс кирпичика"""
-    def __init__(self, x, y, width, height, display, color:tuple, count_lifes = 1):
-        super().__init__((x, y), (width, height))
+    def __init__(self, x, y, width, height, display, color:tuple, count_lifes = 1, id = False):
+        super().__init__((x, y), (width, height), id)
         self.display = display
         self.color = color
         self.count_lifes = count_lifes

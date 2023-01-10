@@ -5,15 +5,16 @@ from ObjectClass import AbcObjectClass
 
 
 class Player(AbcObjectClass):
-    def __init__(self, spawn_x, spawn_y, speed, display, width = 100, height = 20, color:tuple = (100,100,100)):
+    def __init__(self, spawn_x, spawn_y, speed, display, width = 100, height = 20, color:tuple = (100,100,100), is_playable = True, id = False):
         y = spawn_y if spawn_y != -1 else display.get_height() - height
-        super().__init__((spawn_x, y), (width, height))
+        super().__init__((spawn_x, y), (width, height), id)
         self.__base_speed = self.speed = speed
         #self.__baffs = []
         self.display = display
         self.color = color
         self.move_r = False
         self.move_l = False
+        self.is_playable = is_playable
 
     def move_right(self, e_type):
         if e_type == pygame.KEYDOWN: self.move_r = True
