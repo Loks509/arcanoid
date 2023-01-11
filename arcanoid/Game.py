@@ -17,7 +17,7 @@ from Brick import Brick
 class Game():
     """Класс игры"""
     def __init__(self):
-        self.dis = pygame.display.set_mode((800, 700))
+        self.dis = pygame.display.set_mode((stgs.width, stgs.height))
         pygame.display.update()
         pygame.display.set_caption(stgs.name_game)
 
@@ -99,8 +99,8 @@ class Game():
                                 #self.objects.remove(static_obj)
 
 
-    def create_player(self, key_right = False, key_left = False, speed = 20, x = 0, y = -1):
-        player = Player(x, y, speed, self.dis)
+    def create_player(self, key_right = False, key_left = False, speed = 20, x = 0, y = -1, **kwards):
+        player = Player(x, y, speed, self.dis, color = kwards['color'])
         self.objects.append(player)
         if key_right:
             self.list_event_handler.append(player.handle_key_event(key_right, player.move_right))
@@ -120,8 +120,8 @@ class Game():
         self.objects.append(brick)
 
     def create_objects(self):
-        self.player = self.create_player(pygame.K_RIGHT, pygame.K_LEFT)
-        self.opponent = self.create_player(False, False,20,0,0)
+        self.player = self.create_player(pygame.K_RIGHT, pygame.K_LEFT, color = stgs.color_player)
+        self.opponent = self.create_player(False, False,20,0,0, color = stgs.color_opponent)
         self.create_ball()
         # self.create_brick(100, 100, 50, 100)
         for i in range(10):
@@ -149,14 +149,17 @@ class Game():
     def sendGameStateFromServer(self):
         while True:
             data = [[obj.x, obj.y, obj.width, obj.height] for obj in self.objects]
-            self.test.sendData(data)
+            self.test.sendData(data)    #очень не экономично отправлять все данные, но они должны обрабатываться на сервере
             time.sleep(1/60)
 
     def recvGameStateFromServer(self):
+        while True:
             data = self.test.recvData()
             if(data):
+                self.objects = []
                 for obj in data:
-                    pygame.draw.rect(self.dis, stgs.Colors.c_black, [obj[0], obj[1], obj[2], obj[3]])
+                    self.create_brick(obj[0], stgs.height - obj[1], obj[2], obj[3], stgs.Colors.c_black)  #очень кривая релизация (возможно надо как-то идентифицировать объекты надо)
+                    # pygame.draw.rect(self.dis, stgs.Colors.c_black, [obj[0], obj[1], obj[2], obj[3]])
 
     def start_game(self):
         self.create_objects()
@@ -165,14 +168,13 @@ class Game():
             self.test = tcpcon.Server('192.168.1.104',8888)
             p1 = Thread(target = self.sendGameStateFromServer, daemon = True)
             p2 = Thread(target = self.recvGameData, daemon = True)
-            p2.start()
-            p1.start()
         else:
             self.test = tcpcon.Client('192.168.1.104',8888)
-            # p1 = Thread(target = self.recvGameStateFromServer, daemon = True)
-            # p2 = Thread(target = self.recvGameData, daemon = True)
-        
-        
+            p1 = Thread(target = self.recvGameStateFromServer, daemon = True)
+            p2 = Thread(target = self.sendGameData, daemon = True)
+
+        p1.start()
+        p2.start()
         while not self.end_game:
             # print(int(self.clock.get_fps()))
             
@@ -181,13 +183,15 @@ class Game():
             if v_type == '1':
                 self.Trash()
                 
-                for obj in self.objects:
-                    obj.draw()
+                
 
                 self.__processing_collision()
                             #objects.remove(obj)
             else:
-                self.recvGameStateFromServer()
+                # self.recvGameStateFromServer()
+                self.player.draw()
+            for obj in self.objects:
+                obj.draw()
             pygame.display.update()
             self.clock.tick(stgs.FPS)
         pygame.quit()
